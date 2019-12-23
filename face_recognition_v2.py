@@ -39,14 +39,15 @@ def find_match(data, stored_data, thresh = 0.5):
 
     return matches
 
-def true_match(data, stored_data,nnames, thresh = 0.4):
+def true_match(data, stored_data,nnames, unames, thresh = 0.4):
     
     names = nnames.copy()
     names.remove('Uknown')
     matches_t = find_match(data, stored_data, thresh)
 
     names = np.asarray(names)
-    unique_names = np.unique(names)
+    #unique_names = np.unique(names)
+    unique_names = unames
     t_match = np.ones( (matches_t.shape[0], 1) )
 
     for name in unique_names:
@@ -60,8 +61,45 @@ def true_match(data, stored_data,nnames, thresh = 0.4):
     return r_match
 
 
+def scaller_dist(img):
+    dim = (112,112)
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    return resized
 
+def scaller_conc(img):
+    oheight,owidth,_ = img.shape
+    if(oheight >= owidth):
+        height = 112
+        p = (height/oheight)
+        width = owidth*p
+        dim = (int(width), int(height) )
+        # resize image
+        resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        nl = int((112 - resized.shape[1] )/2)
+        lines = np.zeros( (resized.shape[0],nl,3), np.uint8  )
+        resized = np.column_stack(( lines,np.column_stack(( resized, lines )) ))
+        if( ((112 - resized.shape[1])/2) != 0):
+            resized = np.column_stack(( np.zeros((resized.shape[0],1,3),np.uint8 ), resized ) )
+        return resized
 
+    elif(owidth > oheight):
+        width = 112
+        p = (width/owidth)
+        height = oheight*p
+        dim = (int(width), int(height) )
+        # resize image
+        resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+        nl = int((112 - resized.shape[0] )/2)
+        lines = np.zeros( (nl,resized.shape[1],3),np.uint8  )
+
+        resized = np.row_stack(( lines,np.row_stack(( resized, lines )) ))
+        if( ((112 - resized.shape[0])/2) != 0 ):
+
+            resized = np.row_stack(( np.zeros((1,resized.shape[1],3) ,np.uint8), resized ) )
+        return resized
+
+    else:
+        return img
 
 def scaller(img):
     oheight,owidth,_ = img.shape
@@ -102,7 +140,7 @@ def scaller(img):
 
 INPUTVIDEO = '/home/pdi/Face_Recognizer/examples/test3.mp4'
 SKIPFRAMES = 5
-WIDTHDIVIDER = 5
+WIDTHDIVIDER = 1
 SKIP_VIDEO = 0 - 2
 
 
@@ -119,7 +157,17 @@ with open('database/names.pickle', 'rb') as f:
         print('output loaded')
     else:
         print('problem with output')
+with open('database/unames.pickle', 'rb') as f:
+    unames = pickle.load(f)
+    if(unames is not None):
+        print('output loaded')
+    else:
+        print('problem with output')
 names = ['Uknown'] + names
+
+
+#print('Shapee',data_saved.shape)
+
 
 #names.append('Uknown')
 #with open('names.txt') as fi:
@@ -145,15 +193,21 @@ timef = 0
 time2f = 0
 time2i = 0
 frame = 0
+apply_gamma = False
+
 while cap.isOpened():
 
     ret, img = cap.read()
     frame += 1 
     if(ret != True):
         break
-    img = imutils.resize(img, width=int(1920/WIDTHDIVIDER))
+    img = imutils.resize(img, width=int(img.shape[1]/WIDTHDIVIDER))
 
     #img = adjust_gamma(img, gamma = 1.5)        #gamma correction?
+    if(apply_gamma):
+        #print('Gamma')
+        img = adjust_gamma(img, gamma = 1.5)        #gamma correction?
+
     if(skipped <= SKIP_VIDEO):
         skipped += 1
         continue
@@ -180,7 +234,7 @@ while cap.isOpened():
             #if(not any(x<0 for x in bbox)):
             #print('Bbox',(bbox[0],bbox[1]), (bbox[2],bbox[3]))
             #print('=', landmark)
-            face = scaller( img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2]),:] )
+            face = scaller_conc( img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2]),:] )
 
             cv2.rectangle(img, (int(bbox[0]),int(bbox[1])), (int(bbox[2]),int(bbox[3])), (0, 255, 0), 1)
             for cord in landmark:
@@ -201,8 +255,8 @@ while cap.isOpened():
             time2f = time.time()
 
             if(embeddings is not None):
-                matches = true_match(embeddings,data_saved, names, 0.5)
-                #print(labels, matches)
+                matches = true_match(embeddings,data_saved, names, unames, 0.3)  #0.5
+                print(labels, matches)
                 indx = 0    
                 for bbox in bboxs:
                     cv2.putText(img, labels[matches[indx]], (int(bbox[0]),int(bbox[1])),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
@@ -222,6 +276,12 @@ while cap.isOpened():
         #data_saved = np.loadtxt('data.txt')
 
         break
+
+    if(fin == ord('g')):
+        apply_gamma = not apply_gamma
+        print(apply_gamma)
+
+        continue
 
 
 

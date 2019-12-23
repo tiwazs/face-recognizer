@@ -170,7 +170,7 @@ while cap.isOpened():
             time2f = time.time()
 
             if(embeddings is not None):
-                matches = find_match(embeddings,data_saved, 0.5)
+                matches = find_match(embeddings,data_saved, 0.7)
                 indx = 0    
                 for bbox in bboxs:
                     cv2.putText(img, names[matches[indx]], (int(bbox[0]),int(bbox[1])),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)

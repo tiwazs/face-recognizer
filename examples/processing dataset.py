@@ -71,7 +71,7 @@ recognizer = insightface.model_zoo.get_model('arcface_r100_v1')
 
 recognizer.prepare(ctx_id = -1)
 
-path = '/home/pdi/Face_Recognizer/examples/dataset/'
+path = '/home/pdi/Face_Recognizer/dataset/'
 
 WIDTHDIVIDER = 4
 

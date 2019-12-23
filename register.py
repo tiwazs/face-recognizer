@@ -1,6 +1,9 @@
 import cv2
 import imutils
 import argparse
+import numpy as np
+from processing_dataset import *
+
 
 def adjust_gamma(image, gamma=1.0):
 	# build a lookup table mapping the pixel values [0, 255] to
@@ -17,20 +20,20 @@ ap.add_argument("-n", "--name", required=True,
 	help="name to register")
 args = vars(ap.parse_args())
 
-WIDTHDIVIDER = 4
+WIDTHDIVIDER = 1
 cap = cv2.VideoCapture(0)
 
 img_count = 0
 apply_gamma = False
 
-
+os.mkdir("dataset/"+ args['name'])
 while cap.isOpened():
     ret, img = cap.read()
     if(ret != True):
         break
-    img = imutils.resize(img, width=int(1920/WIDTHDIVIDER))
+    img = imutils.resize(img, width=int(img.shape[1]/WIDTHDIVIDER))
     if(apply_gamma):
-        print('Gamma')
+        #print('Gamma')
         img = adjust_gamma(img, gamma = 1.5)        #gamma correction?
 
 
@@ -56,11 +59,14 @@ while cap.isOpened():
         print('IMAGE SAVED', fname)
         continue
     if(fin == ord('g')):
-        adjust_gamma = not adjust_gamma
-        print(adjust_gamma)
+        apply_gamma = not apply_gamma
+        print(apply_gamma)
         continue
 
 
 
 cap.release()
 cv2.destroyAllWindows()
+processingDataset("dataset/", WIDTHDIVIDER)
+
+
