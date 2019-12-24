@@ -6,3 +6,5 @@
 #### Run face_recognition_v2.py to run the face recognizer on live camera. when someone is not on the
 #### database is flagged as Uknown. 
 
+#### TODO: How to make it to fail on photos and such and only work on real people ?
+
