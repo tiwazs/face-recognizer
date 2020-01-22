@@ -176,12 +176,12 @@ names = ['Uknown'] + names
 _,idx = np.unique(np.asarray(names), return_index=True)
 labels = np.asarray(names)[np.sort(idx)]
 
+#loading the face detection model. 0 means to work with GPU. -1 is for CPU.
 model = insightface.model_zoo.get_model('retinaface_r50_v1')
-
 model.prepare(ctx_id = 0, nms=0.4)
 
+#loading the face recognition model. 0 means to work with GPU. -1 is for CPU.
 recognizer = insightface.model_zoo.get_model('arcface_r100_v1')
-
 recognizer.prepare(ctx_id = 0)
 
 cap = cv2.VideoCapture(0)
