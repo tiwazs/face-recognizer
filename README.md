@@ -3,8 +3,8 @@
 ## Real time recognizer using Insightface.
 
 ### Introducción
-###### Con el estallido del Machine Learning y el análisis de datos ha cobrado mucha fuerza el reconocimiento facial por camara de video en tiempo real en aplicaciones de monitoreo, vigilancia y hasta en accesibilidad y seguridad.
-###### Este software es capaz de realizar la detección de todos los rostros en una imagen o video, y, extrayendo ciertas características biométricas de estos los compara con los datos biométricos que se tienen una base de datos de personas registradas para realizar la identificación de las personas detectadas.
+###### With the boom of machine learning and the data science, face recognition algorithms have gain immense strenght for many types of applications, like monitoring, surveilance, and even accesibility and security.
+###### This software is able to detect of every face in an image or a video, and, extracting certain biometric characteristics of the faces and comparing them to the biometric data on a database of registered users to recognize them.
 
 #### Requisitos e Instalación
 Python >=3.5
