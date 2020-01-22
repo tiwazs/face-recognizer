@@ -106,13 +106,13 @@ def scaller(img):
 
 
 def processingDataset(data_path,WIDTHDIVIDER = 4):
-    #loading the face detection model. -1 means to work with GPU. 0 is for CPU.
+    #loading the face detection model. 0 means to work with GPU. -1 is for CPU.
     model = insightface.model_zoo.get_model('retinaface_r50_v1')
-    model.prepare(ctx_id = -1, nms=0.4)
+    model.prepare(ctx_id = 0, nms=0.4)
 
-    #loading the face recognition model. -1 means to work with GPU. 0 is for CPU.
+    #loading the face recognition model. 0 means to work with GPU. -1 is for CPU.
     recognizer = insightface.model_zoo.get_model('arcface_r100_v1')
-    recognizer.prepare(ctx_id = -1)
+    recognizer.prepare(ctx_id = 0)
 
     path = data_path
 
