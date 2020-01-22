@@ -106,12 +106,12 @@ def scaller(img):
 
 
 def processingDataset(data_path,WIDTHDIVIDER = 4):
+    #loading the face detection model. -1 means to work with GPU. 0 is for CPU.
     model = insightface.model_zoo.get_model('retinaface_r50_v1')
-
     model.prepare(ctx_id = -1, nms=0.4)
 
+    #loading the face recognition model. -1 means to work with GPU. 0 is for CPU.
     recognizer = insightface.model_zoo.get_model('arcface_r100_v1')
-
     recognizer.prepare(ctx_id = -1)
 
     path = data_path
@@ -126,7 +126,7 @@ def processingDataset(data_path,WIDTHDIVIDER = 4):
         unames.append(folder)
         for img_name in os.listdir(path + folder + '/'):
             img = cv2.imread(path + folder + '/' + img_name)
-            img = imutils.resize(img, width=int(1920/WIDTHDIVIDER))
+            img = imutils.resize(img, width=int(img.shape[1]/WIDTHDIVIDER))
 
             bboxs, landmarks = model.detect(img, threshold=0.5, scale=1.0)
             faces = []
